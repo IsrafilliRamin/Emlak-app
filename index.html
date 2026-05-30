@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ƏmlakCRM</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0f1117;--bg2:#1a1d2e;--bg3:#242840;--bg4:#2e3250;
+--acc:#4f8ef7;--acc2:#7c6ff7;--acc3:#22d3a5;
+--text:#e8eaf6;--text2:#a0a8d0;--text3:#6b7499;
+--border:#2e3250;--danger:#f75a5a;--warn:#f7a84f;--success:#22d3a5;
+--radius:10px
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
+h2{font-size:18px;font-weight:600;color:var(--text)}
+h3{font-size:15px;font-weight:600;color:var(--text)}
+label{font-size:13px;color:var(--text2);display:block;margin-bottom:5px}
+input,select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius);padding:9px 12px;font-size:13px;width:100%;outline:none;transition:border .2s}
+input:focus,select:focus{border-color:var(--acc)}
+select option{background:var(--bg3)}
+button{cursor:pointer;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;padding:10px 22px}
+.btn-primary:hover{opacity:.88;transform:scale(.98)}
+.btn-danger{background:rgba(247,90,90,.15);color:var(--danger);border:1px solid rgba(247,90,90,.3);padding:6px 12px}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:7px;background:var(--bg4);color:var(--text2);border:1px solid var(--border)}
+.btn-sm:hover{border-color:var(--acc);color:var(--acc)}
+
+#app{display:flex;height:100vh;overflow:hidden}
+
+#sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:16px 12px;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
+.logo{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.logo span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-btn{background:none;border:none;color:var(--text2);padding:10px 12px;border-radius:var(--radius);text-align:left;width:100%;font-size:13px;display:flex;align-items:center;gap:10px;transition:all .15s}
+.nav-btn:hover{background:var(--bg3);color:var(--text)}
+.nav-btn.active{background:rgba(79,142,247,.15);color:var(--acc);border:1px solid rgba(79,142,247,.2)}
+.nav-btn i{font-size:16px}
+.sidebar-footer{margin-top:auto;padding-top:12px;border-top:1px solid var(--border)}
+.user-badge{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--radius)}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.user-info .name{font-size:13px;font-weight:600;color:var(--text)}
+.user-info .role{font-size:11px;color:var(--text3)}
+
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+#notif-count{background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;position:absolute;top:-4px;right:-4px}
+.notif-btn{position:relative;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;color:var(--text2);display:flex;align-items:center}
+.notif-btn:hover{border-color:var(--acc);color:var(--acc)}
+
+#content{flex:1;overflow-y:auto;padding:20px}
+
+.page{display:none}
+.page.active{display:block}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+
+.search-panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.search-panel h3{margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--acc)}
+.search-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.budget-row{display:flex;align-items:center;gap:8px}
+.budget-row input{flex:1}
+.budget-row span{color:var(--text3);font-size:13px;white-space:nowrap}
+.search-footer{display:flex;gap:10px;margin-top:14px}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:var(--bg3)}
+th{padding:10px 12px;text-align:left;font-size:12px;color:var(--text3);font-weight:600;white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid rgba(46,50,80,.5);color:var(--text2);vertical-align:middle}
+tr:hover td{background:rgba(79,142,247,.04)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-blue{background:rgba(79,142,247,.15);color:var(--acc)}
+.badge-green{background:rgba(34,211,165,.12);color:var(--success)}
+.badge-warn{background:rgba(247,168,79,.12);color:var(--warn)}
+.badge-purple{background:rgba(124,111,247,.15);color:var(--acc2)}
+.badge-red{background:rgba(247,90,90,.12);color:var(--danger)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.stat-val{font-size:26px;font-weight:700;margin:4px 0}
+.stat-label{font-size:12px;color:var(--text3)}
+.stat-blue .stat-val{color:var(--acc)}
+.stat-green .stat-val{color:var(--success)}
+.stat-warn .stat-val{color:var(--warn)}
+.stat-purple .stat-val{color:var(--acc2)}
+
+#notif-panel{position:fixed;top:56px;right:20px;width:320px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:100;display:none;max-height:400px;overflow-y:auto}
+.notif-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-item{padding:12px 16px;border-bottom:1px solid rgba(46,50,80,.4);cursor:pointer;transition:background .15s}
+.notif-item:hover{background:var(--bg3)}
+.notif-item.unread{border-left:3px solid var(--acc)}
+.notif-time{font-size:11px;color:var(--text3);margin-top:3px}
+
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.login-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;width:400px}
+.login-logo{font-size:22px;font-weight:700;text-align:center;margin-bottom:24px}
+.login-logo span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-form .form-group{margin-bottom:14px}
+.login-btn{width:100%;padding:12px;margin-top:8px}
+.login-divider{text-align:center;color:var(--text3);font-size:12px;margin:12px 0}
+.login-tabs{display:flex;gap:0;margin-bottom:20px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.login-tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;color:var(--text3);background:none;border:none;transition:all .2s}
+.login-tab.active{background:rgba(79,142,247,.2);color:var(--acc)}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--success);border-radius:10px;padding:12px 18px;color:var(--success);font-size:13px;font-weight:600;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateY(0);opacity:1}
+
+.otaq-group{display:flex;flex-wrap:wrap;gap:6px}
+.otaq-chip{padding:6px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border);color:var(--text3);cursor:pointer;background:var(--bg3);transition:all .15s}
+.otaq-chip:hover{border-color:var(--acc);color:var(--acc)}
+.otaq-chip.selected{background:rgba(79,142,247,.2);border-color:var(--acc);color:var(--acc);font-weight:600}
+
+.row-new{animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text3)}
+.empty-state i{font-size:40px;margin-bottom:12px;display:block;color:var(--border)}
+</style>
+</head>
+<body>
+
+<!-- GİRİŞ SƏHİFƏSİ -->
+<div id="login-screen">
+  <div class="login-page">
+    <div class="login-box">
+      <div class="login-logo">🏠 <span>ƏmlakCRM</span></div>
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchLoginTab('login')">Giriş</button>
+        <button class="login-tab" onclick="switchLoginTab('register')">Qeydiyyat</button>
+      </div>
+      <div id="login-form-div">
+        <div class="form-group" style="margin-bottom:14px"><label>İstifadəçi adı</label><input id="l-user" placeholder="istifadeci_adi" value="admin"/></div>
+        <div class="form-group" style="margin-bottom:14px"><label>Şifrə</label><input id="l-pass" type="password" placeholder="••••••" value="1234"/></div>
+        <button class="btn-primary login-btn" onclick="doLogin()">Daxil ol</button>
+        <div class="login-divider">Demo: admin / 1234</div>
+      </div>
+      <div id="register-form-div" style="display:none">
+        <div class="form-group" style="margin-bottom:14px"><label>Ad Soyad</label><input id="r-name" placeholder="Əli Hüseynov"/></div>
+        <div class="form-group" style="margin-bottom:14px"><label>İstifadəçi adı</label><input id="r-user" placeholder="ali_huseynov"/></div>
+        <div class="form-group" style="margin-bottom:14px"><label>Şifrə</label><input id="r-pass" type="password" placeholder="••••••"/></div>
+        <button class="btn-primary login-btn" onclick="doRegister()">Qeydiyyatdan keç</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANA PANEL -->
+<div id="app" style="display:none">
+  <div id="sidebar">
+    <div class="logo">🏠 <span>ƏmlakCRM</span></div>
+    <button class="nav-btn active" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i> Ana Səhifə</button>
+    <button class="nav-btn" onclick="showPage('muraciet')"><i class="ti ti-plus-circle"></i> Müraciət əlavə et</button>
+    <button class="nav-btn" onclick="showPage('cedvel')"><i class="ti ti-table"></i> Cədvəl</button>
+    <button class="nav-btn" onclick="showPage('axtaris')"><i class="ti ti-search"></i> Axtarış</button>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="avatar" id="usr-avatar">A</div>
+        <div class="user-info">
+          <div class="name" id="usr-name">Admin</div>
+          <div class="role">Operator</div>
+        </div>
+      </div>
+      <button class="nav-btn" style="margin-top:6px;color:var(--danger)" onclick="doLogout()"><i class="ti ti-logout"></i> Çıxış</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="topbar">
+      <div class="topbar-title"><i class="ti ti-layout-dashboard" style="color:var(--acc)"></i> <span id="page-title">Ana Səhifə</span></div>
+      <div class="topbar-actions">
+        <button class="notif-btn" onclick="toggleNotif()">
+          <i class="ti ti-bell" style="font-size:18px"></i>
+          <span id="notif-count" style="display:none">0</span>
+        </button>
+        <button class="btn-primary" onclick="showPage('muraciet')"><i class="ti ti-plus"></i> Yeni müraciət</button>
+      </div>
+    </div>
+
+    <div id="content">
+
+      <!-- ANA SƏHİFƏ -->
+      <div id="page-dashboard" class="page active">
+        <div class="stats-grid">
+          <div class="stat-card stat-blue"><div class="stat-label">Ümumi müraciət</div><div class="stat-val" id="s-total">0</div></div>
+          <div class="stat-card stat-green"><div class="stat-label">Bu gün</div><div class="stat-val" id="s-today">0</div></div>
+          <div class="stat-card stat-purple"><div class="stat-label">Mənzil</div><div class="stat-val" id="s-menzil">0</div></div>
+          <div class="stat-card stat-warn"><div class="stat-label">Qeydiyyatlı istifadəçi</div><div class="stat-val" id="s-users">0</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="ti ti-clock-hour-4" style="color:var(--acc)"></i> Son müraciətlər</h3></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>#</th><th>Tarix</th><th>Ərazi</th><th>Əmlak növü</th><th>Otaq</th><th>Büdcə</th><th>Müştəri</th></tr></thead>
+            <tbody id="dash-tbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- MÜRACİƏT FORMU -->
+      <div id="page-muraciet" class="page">
+        <div class="card">
+          <div class="card-header"><h3><i class="ti ti-form" style="color:var(--acc)"></i> Yeni müraciət daxil et</h3></div>
+          <div class="form-grid">
+            <div class="form-group"><label>Tarix (avtomatik)</label><input id="f-tarix" readonly/></div>
+            <div class="form-group"><label>Müştəri adı</label><input id="f-musteri" placeholder="Ad Soyad"/></div>
+            <div class="form-group"><label>Ərazi</label>
+              <select id="f-erazi">
+                <option value="">Seçin...</option>
+                <option>Nizami rayonu</option><option>Xətai rayonu</option><option>Nəsimi rayonu</option>
+                <option>Sabunçu rayonu</option><option>Binəqədi rayonu</option><option>Suraxanı rayonu</option>
+                <option>Pirəkəşkül</option><option>Maştağa</option><option>Novxanı</option><option>Nardaran</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Əmlakın növü</label>
+              <select id="f-emlak">
+                <option value="">Seçin...</option>
+                <option>Mənzil</option><option>Həyət evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Tikilinin növü</label>
+              <select id="f-tikili">
+                <option value="">Seçin...</option>
+                <option>Köhnə tikili</option><option>Yeni tikili</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Büdcə (AZN)</label><input id="f-budce" type="number" placeholder="150000"/></div>
+          </div>
+          <div class="form-group" style="margin-top:14px"><label>Otaq sayı</label>
+            <div class="otaq-group" id="otaq-chips">
+              <div class="otaq-chip" onclick="selOtaq(this,'1 otaq')">1 otaq</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'1→2 otaq')">1 otaqdan 2 otağa düzəlmə</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'2 otaq')">2 otaq</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'3 otaq')">3 otaq</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'3→4 otaq')">3 otaqdan 4 otağa düzəlmə</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'4 otaq')">4 otaq</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'4→3 otaq')">4 otaqdan 3 otağa düzəlmə</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'5 otaq')">5 otaq</div>
+              <div class="otaq-chip" onclick="selOtaq(this,'5→4 otaq')">5 otaqdan 4 otağa düzəlmə</div>
+            </div>
+            <input type="hidden" id="f-otaq"/>
+          </div>
+          <div class="form-group" style="margin-top:14px"><label>Qeyd</label><input id="f-qeyd" placeholder="Əlavə məlumat..."/></div>
+          <div style="margin-top:18px;display:flex;gap:10px">
+            <button class="btn-primary" onclick="saveMuraciet()"><i class="ti ti-check"></i> Yadda saxla</button>
+            <button class="btn-sm" onclick="clearForm()"><i class="ti ti-refresh"></i> Təmizlə</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CƏDVƏL -->
+      <div id="page-cedvel" class="page">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="ti ti-table" style="color:var(--acc)"></i> Bütün müraciətlər</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="cedvel-filter" onchange="renderTable()" style="width:auto;font-size:12px;padding:6px 10px">
+                <option value="">Hamısı</option>
+                <option>1 otaq</option><option>2 otaq</option><option>3 otaq</option><option>4 otaq</option><option>5 otaq</option>
+                <option>1→2 otaq</option><option>3→4 otaq</option><option>4→3 otaq</option><option>5→4 otaq</option>
+              </select>
+              <span id="cedvel-count" style="font-size:12px;color:var(--text3)">0 nəticə</span>
+            </div>
+          </div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>#</th><th>Tarix</th><th>Müştəri</th><th>Ərazi</th><th>Əmlak</th><th>Tikili</th><th>Otaq</th><th>Büdcə</th><th>Qeyd</th><th>Sil</th></tr></thead>
+            <tbody id="main-tbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- AXTARIŞ -->
+      <div id="page-axtaris" class="page">
+        <div class="search-panel">
+          <h3><i class="ti ti-filter"></i> Axtarış filtri</h3>
+          <div class="search-grid">
+            <div class="form-group"><label>1. Ərazi bölməsi</label>
+              <select id="ax-erazi">
+                <option value="">Hamısı</option>
+                <option>Nizami rayonu</option><option>Xətai rayonu</option><option>Nəsimi rayonu</option>
+                <option>Sabunçu rayonu</option><option>Binəqədi rayonu</option><option>Suraxanı rayonu</option>
+                <option>Pirəkəşkül</option><option>Maştağa</option><option>Novxanı</option><option>Nardaran</option>
+              </select>
+            </div>
+            <div class="form-group"><label>2. Əmlakın növü</label>
+              <select id="ax-emlak">
+                <option value="">Hamısı</option>
+                <option>Mənzil</option><option>Həyət evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
+              </select>
+            </div>
+            <div class="form-group"><label>3. Tikilinin növü</label>
+              <select id="ax-tikili">
+                <option value="">Hamısı</option>
+                <option>Köhnə tikili</option><option>Yeni tikili</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px"><label>4. Otaq sayı</label>
+            <div class="otaq-group" id="ax-otaq-chips">
+              <div class="otaq-chip selected" onclick="axSelOtaq(this,'')">Hamısı</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'1 otaq')">1 otaq</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'1→2 otaq')">1→2</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'2 otaq')">2 otaq</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'3 otaq')">3 otaq</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'3→4 otaq')">3→4</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'4 otaq')">4 otaq</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'4→3 otaq')">4→3</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'5 otaq')">5 otaq</div>
+              <div class="otaq-chip" onclick="axSelOtaq(this,'5→4 otaq')">5→4</div>
+            </div>
+            <input type="hidden" id="ax-otaq"/>
+          </div>
+          <div class="form-group"><label>5. Büdcə aralığı (AZN)</label>
+            <div class="budget-row">
+              <input id="ax-b-min" type="number" placeholder="min (məs: 50000)"/>
+              <span>—dən</span>
+              <input id="ax-b-max" type="number" placeholder="max (məs: 180000)"/>
+              <span>—ə qədər</span>
+            </div>
+          </div>
+          <div class="search-footer">
+            <button class="btn-primary" onclick="doSearch()"><i class="ti ti-search"></i> Axtar</button>
+            <button class="btn-sm" onclick="clearSearch()"><i class="ti ti-x"></i> Sıfırla</button>
+            <span id="ax-result-count" style="font-size:12px;color:var(--text3);align-self:center"></span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap"><table>
+            <thead><tr><th>#</th><th>Tarix</th><th>Müştəri</th><th>Ərazi</th><th>Əmlak</th><th>Tikili</th><th>Otaq</th><th>Büdcə</th></tr></thead>
+            <tbody id="ax-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text3);padding:30px">Axtarış edin</td></tr></tbody>
+          </table></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- BİLDİRİŞ PANELİ -->
+<div id="notif-panel">
+  <div class="notif-header">
+    <span style="font-size:14px;font-weight:600">Bildirişlər</span>
+    <button class="btn-sm" onclick="clearNotifs()">Hamısını sil</button>
+  </div>
+  <div id="notif-list"></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script>
+// ===================== VERİLƏNLƏR BAZASI (yaddaşda) =====================
+var DB = {
+  users: [{name:'Admin', username:'admin', pass:'1234'}],
+  muracietler: [],
+  notifications: []
+};
+
+var currentUser = null;
+var selOtaqVal = '';
+var axOtaqVal = '';
+
+// ===================== KÖMƏKÇİ FUNKSİYALAR =====================
+function fmtDate(d) {
+  var dt = d || new Date();
+  return dt.toLocaleDateString('az-AZ', {day:'2-digit', month:'2-digit', year:'numeric'})
+       + ' ' + dt.toLocaleTimeString('az-AZ', {hour:'2-digit', minute:'2-digit'});
+}
+
+function emlakBadge(t) {
+  var map = {
+    'Mənzil':'badge-blue','Torpaq':'badge-green',
+    'Həyət evi':'badge-warn','Obyekt':'badge-purple','Qaraj':'badge-red'
+  };
+  return '<span class="badge ' + (map[t]||'badge-blue') + '">' + (t||'—') + '</span>';
+}
+
+function tikBadge(t) {
+  return t === 'Yeni tikili'
+    ? '<span class="badge badge-green">Yeni</span>'
+    : '<span class="badge badge-warn">Köhnə</span>';
+}
+
+// ===================== GİRİŞ / ÇIXIŞ =====================
+function switchLoginTab(t) {
+  document.querySelectorAll('.login-tab').forEach(function(b,i){
+    b.classList.toggle('active', (i===0 && t==='login') || (i===1 && t==='register'));
+  });
+  document.getElementById('login-form-div').style.display = t==='login' ? 'block' : 'none';
+  document.getElementById('register-form-div').style.display = t==='register' ? 'block' : 'none';
+}
+
+function doLogin() {
+  var u = document.getElementById('l-user').value.trim();
+  var p = document.getElementById('l-pass').value;
+  var found = DB.users.find(function(x){ return x.username===u && x.pass===p; });
+  if (!found) { showToast('İstifadəçi adı və ya şifrə yanlışdır!', 'var(--danger)'); return; }
+  currentUser = found;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('usr-name').textContent = found.name;
+  document.getElementById('usr-avatar').textContent = found.name[0].toUpperCase();
+  setDateField();
+  updateStats();
+  renderTable();
+  renderDash();
+}
+
+function doRegister() {
+  var name = document.getElementById('r-name').value.trim();
+  var user = document.getElementById('r-user').value.trim();
+  var pass = document.getElementById('r-pass').value;
+  if (!name || !user || !pass) { showToast('Bütün sahələri doldurun','var(--warn)'); return; }
+  if (DB.users.find(function(x){ return x.username===user; })) {
+    showToast('Bu istifadəçi adı artıq mövcuddur','var(--danger)'); return;
+  }
+  DB.users.push({name:name, username:user, pass:pass});
+  showToast('Qeydiyyat uğurludur! İndi daxil olun.','var(--success)');
+  switchLoginTab('login');
+  document.getElementById('l-user').value = user;
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ===================== SƏHİFƏ KEÇİDİ =====================
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(function(x){ x.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(x){ x.classList.remove('active'); });
+  document.getElementById('page-' + p).classList.add('active');
+  var titles = {dashboard:'Ana Səhifə', muraciet:'Müraciət əlavə et', cedvel:'Cədvəl', axtaris:'Axtarış'};
+  document.getElementById('page-title').textContent = titles[p] || p;
+  var idx = {dashboard:0, muraciet:1, cedvel:2, axtaris:3};
+  document.querySelectorAll('.nav-btn')[idx[p]||0].classList.add('active');
+  if (p === 'muraciet') setDateField();
+  if (p === 'cedvel') renderTable();
+  if (p === 'dashboard') { renderDash(); updateStats(); }
+}
+
+// ===================== MÜRACIƏT FORMU =====================
+function setDateField() {
+  var el = document.getElementById('f-tarix');
+  if (el) el.value = fmtDate(new Date());
+}
+
+function selOtaq(el, val) {
+  document.querySelectorAll('#otaq-chips .otaq-chip').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selOtaqVal = val;
+  document.getElementById('f-otaq').value = val;
+}
+
+function saveMuraciet() {
+  var musteri = document.getElementById('f-musteri').value.trim();
+  var erazi   = document.getElementById('f-erazi').value;
+  var emlak   = document.getElementById('f-emlak').value;
+  var tikili  = document.getElementById('f-tikili').value;
+  var budce   = document.getElementById('f-budce').value;
+  var otaq    = selOtaqVal;
+  var qeyd    = document.getElementById('f-qeyd').value;
+
+  if (!musteri || !erazi || !emlak || !tikili || !otaq) {
+    showToast('Zəhmət olmasa bütün vacib sahələri doldurun','var(--warn)');
+    return;
+  }
+
+  var rec = {
+    id: Date.now(),
+    tarix: new Date(),
+    musteri: musteri,
+    erazi: erazi,
+    emlak: emlak,
+    tikili: tikili,
+    budce: budce || '—',
+    otaq: otaq,
+    qeyd: qeyd,
+    daxilEden: currentUser.name
+  };
+
+  DB.muracietler.unshift(rec);
+  addNotification('Yeni müraciət: ' + musteri + ' — ' + otaq + ' (' + erazi + ')');
+  playDing();
+  showToast('✅ Müraciət uğurla əlavə edildi!','var(--success)');
+  clearForm();
+  updateStats();
+  renderTable();
+  renderDash();
+}
+
+function clearForm() {
+  ['f-musteri','f-erazi','f-emlak','f-tikili','f-budce','f-qeyd'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.querySelectorAll('#otaq-chips .otaq-chip').forEach(function(c){ c.classList.remove('selected'); });
+  selOtaqVal = '';
+  setDateField();
+}
+
+// ===================== CƏDVƏL =====================
+function renderTable() {
+  var filt = document.getElementById('cedvel-filter').value;
+  var data = filt
+    ? DB.muracietler.filter(function(r){ return r.otaq === filt; })
+    : DB.muracietler;
+
+  document.getElementById('cedvel-count').textContent = data.length + ' nəticə';
+  var tbody = document.getElementById('main-tbody');
+
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="ti ti-inbox"></i>Müraciət yoxdur</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map(function(r, i){
+    var b = r.budce !== '—' ? Number(r.budce).toLocaleString() + ' ₼' : '—';
+    return '<tr class="row-new">'
+      + '<td style="color:var(--text3);font-size:12px">' + (i+1) + '</td>'
+      + '<td style="font-size:12px;white-space:nowrap">' + fmtDate(r.tarix) + '</td>'
+      + '<td><b>' + r.musteri + '</b></td>'
+      + '<td>' + r.erazi + '</td>'
+      + '<td>' + emlakBadge(r.emlak) + '</td>'
+      + '<td>' + tikBadge(r.tikili) + '</td>'
+      + '<td><span class="badge badge-blue">' + r.otaq + '</span></td>'
+      + '<td style="color:var(--acc);font-weight:600">' + b + '</td>'
+      + '<td style="color:var(--text3);font-size:12px">' + (r.qeyd||'—') + '</td>'
+      + '<td><button class="btn-danger btn-sm" onclick="delRec(' + r.id + ')"><i class="ti ti-trash"></i></button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+function delRec(id) {
+  DB.muracietler = DB.muracietler.filter(function(r){ return r.id !== id; });
+  renderTable(); renderDash(); updateStats();
+  showToast('Müraciət silindi','var(--danger)');
+}
+
+// ===================== ANA SƏHİFƏ =====================
+function renderDash() {
+  var data = DB.muracietler.slice(0, 8);
+  var tbody = document.getElementById('dash-tbody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="ti ti-inbox"></i>Hələ müraciət yoxdur</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(function(r, i){
+    var b = r.budce !== '—' ? Number(r.budce).toLocaleString() + ' ₼' : '—';
+    return '<tr>'
+      + '<td style="color:var(--text3);font-size:12px">' + (i+1) + '</td>'
+      + '<td style="font-size:12px;white-space:nowrap">' + fmtDate(r.tarix) + '</td>'
+      + '<td>' + r.erazi + '</td>'
+      + '<td>' + emlakBadge(r.emlak) + '</td>'
+      + '<td><span class="badge badge-blue">' + r.otaq + '</span></td>'
+      + '<td style="color:var(--acc)">' + b + '</td>'
+      + '<td style="font-size:12px">' + r.musteri + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+function updateStats() {
+  var today = new Date().toDateString();
+  document.getElementById('s-total').textContent = DB.muracietler.length;
+  document.getElementById('s-today').textContent = DB.muracietler.filter(function(r){
+    return new Date(r.tarix).toDateString() === today;
+  }).length;
+  document.getElementById('s-menzil').textContent = DB.muracietler.filter(function(r){
+    return r.emlak === 'Mənzil';
+  }).length;
+  document.getElementById('s-users').textContent = DB.users.length;
+}
+
+// ===================== AXTARIŞ =====================
+function axSelOtaq(el, val) {
+  document.querySelectorAll('#ax-otaq-chips .otaq-chip').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  axOtaqVal = val;
+  document.getElementById('ax-otaq').value = val;
+}
+
+function doSearch() {
+  var erazi  = document.getElementById('ax-erazi').value;
+  var emlak  = document.getElementById('ax-emlak').value;
+  var tikili = document.getElementById('ax-tikili').value;
+  var otaq   = axOtaqVal;
+  var bmin   = document.getElementById('ax-b-min').value;
+  var bmax   = document.getElementById('ax-b-max').value;
+
+  var res = DB.muracietler.filter(function(r){
+    if (erazi  && r.erazi  !== erazi)  return false;
+    if (emlak  && r.emlak  !== emlak)  return false;
+    if (tikili && r.tikili !== tikili) return false;
+    if (otaq   && r.otaq   !== otaq)   return false;
+    if (bmin && r.budce !== '—' && Number(r.budce) < Number(bmin)) return false;
+    if (bmax && r.budce !== '—' && Number(r.budce) > Number(bmax)) return false;
+    return true;
+  });
+
+  document.getElementById('ax-result-count').textContent = res.length + ' nəticə tapıldı';
+  var tbody = document.getElementById('ax-tbody');
+
+  if (!res.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="ti ti-search-off"></i>Nəticə tapılmadı</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = res.map(function(r, i){
+    var b = r.budce !== '—' ? Number(r.budce).toLocaleString() + ' ₼' : '—';
+    return '<tr>'
+      + '<td style="color:var(--text3);font-size:12px">' + (i+1) + '</td>'
+      + '<td style="font-size:12px;white-space:nowrap">' + fmtDate(r.tarix) + '</td>'
+      + '<td><b>' + r.musteri + '</b></td>'
+      + '<td>' + r.erazi + '</td>'
+      + '<td>' + emlakBadge(r.emlak) + '</td>'
+      + '<td>' + tikBadge(r.tikili) + '</td>'
+      + '<td><span class="badge badge-blue">' + r.otaq + '</span></td>'
+      + '<td style="color:var(--acc)">' + b + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+function clearSearch() {
+  ['ax-erazi','ax-emlak','ax-tikili','ax-b-min','ax-b-max'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  document.querySelectorAll('#ax-otaq-chips .otaq-chip').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelector('#ax-otaq-chips .otaq-chip').classList.add('selected');
+  axOtaqVal = '';
+  document.getElementById('ax-result-count').textContent = '';
+  document.getElementById('ax-tbody').innerHTML =
+    '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:30px">Axtarış edin</td></tr>';
+}
+
+// ===================== BİLDİRİŞLƏR =====================
+function addNotification(msg) {
+  DB.notifications.unshift({msg: msg, time: new Date(), read: false});
+  var cnt = DB.notifications.filter(function(n){ return !n.read; }).length;
+  var el = document.getElementById('notif-count');
+  el.textContent = cnt;
+  el.style.display = cnt > 0 ? 'flex' : 'none';
+  renderNotifs();
+}
+
+function renderNotifs() {
+  var list = document.getElementById('notif-list');
+  if (!DB.notifications.length) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">Bildiriş yoxdur</div>';
+    return;
+  }
+  list.innerHTML = DB.notifications.slice(0,20).map(function(n){
+    return '<div class="notif-item' + (n.read ? '' : ' unread') + '">'
+      + '<div style="font-size:13px;color:var(--text)">' + n.msg + '</div>'
+      + '<div class="notif-time">' + fmtDate(n.time) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function toggleNotif() {
+  DB.notifications.forEach(function(n){ n.read = true; });
+  document.getElementById('notif-count').style.display = 'none';
+  var p = document.getElementById('notif-panel');
+  p.style.display = p.style.display === 'block' ? 'none' : 'block';
+  renderNotifs();
+}
+
+function clearNotifs() {
+  DB.notifications = [];
+  renderNotifs();
+  document.getElementById('notif-panel').style.display = 'none';
+}
+
+document.addEventListener('click', function(e){
+  var p = document.getElementById('notif-panel');
+  if (p.style.display === 'block' && !p.contains(e.target) && !e.target.closest('.notif-btn')) {
+    p.style.display = 'none';
+  }
+});
+
+// ===================== SƏS BİLDİRİŞİ (ding) =====================
+function playDing() {
+  try {
+    var ac = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ac.createOscillator();
+    var g = ac.createGain();
+    osc.connect(g);
+    g.connect(ac.destination);
+    osc.frequency.setValueAtTime(880, ac.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ac.currentTime + 0.3);
+    g.gain.setValueAtTime(0.4, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.5);
+    osc.start(ac.currentTime);
+    osc.stop(ac.currentTime + 0.5);
+  } catch(e) {}
+}
+
+// ===================== TOAST =====================
+function showToast(msg, color) {
+  var t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.style.borderColor = color || 'var(--success)';
+  t.style.color = color || 'var(--success)';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+</script>
+</body>
+</html>
