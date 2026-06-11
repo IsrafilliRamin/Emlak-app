@@ -46,6 +46,14 @@ function doLogin() {
     if (adminNavBtn) adminNavBtn.style.display = 'none';
     if (adminBnBtn) adminBnBtn.style.display = 'none';
   }
+  // Müraciət düyməsi — yalnız canEdit və ya admin
+  var canAdd = f.role === 'admin' || f.canEdit;
+  var mNavBtn = document.getElementById('nav-muraciet-btn');
+  var mBnBtn = document.getElementById('bn-muraciet-btn');
+  var topNewBtn = document.getElementById('topbar-new-btn');
+  if (mNavBtn) mNavBtn.style.display = canAdd ? 'flex' : 'none';
+  if (mBnBtn) mBnBtn.style.display = canAdd ? 'flex' : 'none';
+  if (topNewBtn) topNewBtn.style.display = canAdd ? 'flex' : 'none';
   setDateField(); updateStats(); renderList(); renderDash();
 }
 
@@ -59,8 +67,10 @@ function doLogout() {
 
 // ===== ADMİN - İSTİFADƏÇİ İDARƏETMƏSİ =====
 function renderAdminUsers() {
+  // Yalnız admin bu funksiyanı çağıra bilər
   if (!currentUser || currentUser.role !== 'admin') return;
   var list = document.getElementById('admin-user-list');
+  // Adminin özü xaric bütün istifadəçilər
   var users = DB.users.filter(function (u) { return u.role !== 'admin'; });
   if (!users.length) {
     list.innerHTML = '<div class="empty-state"><i class="ti ti-users"></i>Heç bir istifadəçi yoxdur</div>';
@@ -83,6 +93,10 @@ function renderAdminUsers() {
 }
 
 function toggleEditPerm(username) {
+  // Yalnız admin
+  if (!currentUser || currentUser.role !== 'admin') return;
+  // Adminin öz hesabına toxunmaq olmaz
+  if (username === currentUser.username) return;
   var u = DB.users.find(function (x) { return x.username === username; });
   if (!u) return;
   u.canEdit = !u.canEdit;
@@ -91,6 +105,19 @@ function toggleEditPerm(username) {
 }
 
 function deleteUser(username) {
+  // Yalnız admin silə bilər
+  if (!currentUser || currentUser.role !== 'admin') {
+    showToast('⛔ Bu əməliyyat üçün icazəniz yoxdur'); return;
+  }
+  // Admin özünü silə bilməz
+  if (username === currentUser.username) {
+    showToast('⛔ Öz hesabınızı silə bilməzsiniz'); return;
+  }
+  // Başqa admin silinə bilməz
+  var target = DB.users.find(function (u) { return u.username === username; });
+  if (target && target.role === 'admin') {
+    showToast('⛔ Admin hesabı silinə bilməz'); return;
+  }
   if (!confirm('İstifadəçini silmək istədiyinizə əminsiniz?')) return;
   DB.users = DB.users.filter(function (u) { return u.username !== username; });
   showToast('🗑️ İstifadəçi silindi');
@@ -120,9 +147,11 @@ var pIcons = { dashboard: 'ti-layout-dashboard', muraciet: 'ti-plus-circle', ced
 var pTitles = { dashboard: 'Ana Səhifə', muraciet: 'Müraciət əlavə et', cedvel: 'Cədvəl', axtaris: 'Axtarış', admin: 'Admin Panel' };
 
 function showPage(p) {
-  // Hüquq yoxlaması
-  if (p === 'admin' && (!currentUser || currentUser.role !== 'admin')) return;
-  if (p === 'muraciet' && currentUser && !currentUser.canEdit && currentUser.role !== 'admin') {
+  if (!currentUser) return;
+  if (p === 'admin' && currentUser.role !== 'admin') {
+    showToast('⛔ Bu səhifəyə girişiniz yoxdur'); return;
+  }
+  if (p === 'muraciet' && !currentUser.canEdit && currentUser.role !== 'admin') {
     showToast('⛔ Müraciət əlavə etmə hüququnuz yoxdur'); return;
   }
 
@@ -211,6 +240,7 @@ function clearForm() {
 
 // ===== KART =====
 function makeCard(r, showActions) {
+  // Düymələr yalnız admin və ya canEdit=true olanlara göstərilir
   var canDoActions = showActions && currentUser && (currentUser.role === 'admin' || currentUser.canEdit);
   var btns = '';
   if (canDoActions) {
