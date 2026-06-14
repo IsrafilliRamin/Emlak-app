@@ -4,6 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>ƏmlakCRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <link rel="stylesheet" href="style.css"/>
 </head>
@@ -12,12 +15,10 @@
 <!-- GİRİŞ -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">🏠 <span>ƏmlakCRM</span></div>
-    <div id="lf-login">
-      <div class="lf-group"><label>İstifadəçi adı</label><input id="l-user" autocomplete="username" placeholder="İstifadəçi adınızı daxil edin"/></div>
-      <div class="lf-group"><label>Şifrə</label><input id="l-pass" type="password" autocomplete="current-password" placeholder="Şifrənizi daxil edin"/></div>
-      <button class="btn-primary login-btn" onclick="doLogin()">Daxil ol</button>
-    </div>
+    <div class="login-logo">🏠 <span>Homex Əmlak CRM</span></div>
+    <div class="lf-group"><label>İstifadəçi adı</label><input id="l-user" autocomplete="username" placeholder="istifadəçi adı"/></div>
+    <div class="lf-group"><label>Şifrə</label><input id="l-pass" type="password" autocomplete="current-password" placeholder="şifrə"/></div>
+    <button class="btn-primary login-btn" onclick="doLogin()">Daxil ol</button>
   </div>
 </div>
 
@@ -25,17 +26,19 @@
 <div id="app" style="display:none">
   <div id="sidebar">
     <div class="logo">🏠 <span>ƏmlakCRM</span></div>
-    <button class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i> Ana Səhifə</button>
-    <button class="nav-btn" data-page="muraciet" id="nav-muraciet-btn" onclick="showPage('muraciet')"><i class="ti ti-plus-circle"></i> Müraciət əlavə et</button>
-    <button class="nav-btn" data-page="cedvel" onclick="showPage('cedvel')"><i class="ti ti-table"></i> Cədvəl</button>
-    <button class="nav-btn" data-page="axtaris" onclick="showPage('axtaris')"><i class="ti ti-search"></i> Axtarış</button>
-    <button class="nav-btn" data-page="admin" id="nav-admin-btn" onclick="showPage('admin')" style="display:none;color:var(--warn)"><i class="ti ti-shield-lock"></i> Admin Panel</button>
+    <button class="nav-btn active" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i> Ana Səhifə</button>
+    <button class="nav-btn" onclick="showPage('muraciet')"><i class="ti ti-plus-circle"></i> Cədvəl yarat</button>
+    <button class="nav-btn" onclick="showPage('cedvel')"><i class="ti ti-table"></i> Cədvəl</button>
+    <button class="nav-btn" onclick="showPage('axtaris')"><i class="ti ti-search"></i> Axtarış</button>
+    <button class="nav-btn" onclick="showPage('agentler')"><i class="ti ti-user-star"></i> Vasitəçi Agentlər</button>
+    <button class="nav-btn" onclick="showPage('musteriler')"><i class="ti ti-users-group"></i> Müştərilər</button>
+    <button class="nav-btn" id="nav-admin" style="display:none;color:var(--acc2)" onclick="showPage('admin')"><i class="ti ti-users"></i> İstifadəçilər</button>
     <div class="sidebar-footer">
       <div class="user-badge">
         <div class="avatar" id="usr-avatar-d">A</div>
         <div class="user-info">
-          <div class="uname" id="usr-name-d">—</div>
-          <div class="urole" id="usr-role-d">—</div>
+          <div class="uname" id="usr-name-d">Admin</div>
+          <div class="urole" id="usr-role-d">Operator</div>
         </div>
       </div>
       <button class="nav-btn" style="margin-top:6px;color:var(--danger)" onclick="doLogout()"><i class="ti ti-logout"></i> Çıxış</button>
@@ -53,7 +56,7 @@
           <i class="ti ti-bell" style="font-size:19px"></i>
           <span id="notif-count" style="display:none">0</span>
         </button>
-        <button class="topbar-new-btn" id="topbar-new-btn" onclick="showPage('muraciet')">
+        <button class="topbar-new-btn" onclick="showPage('muraciet')">
           <i class="ti ti-plus"></i><span>Yeni</span>
         </button>
         <button class="btn-sm" onclick="doLogout()" style="color:var(--danger);border-color:rgba(247,90,90,.3)"><i class="ti ti-logout"></i></button>
@@ -76,7 +79,7 @@
         </div>
       </div>
 
-      <!-- MÜRACIƏT FORMU -->
+      <!-- CƏDVƏL YARAT -->
       <div id="page-muraciet" class="page">
         <div class="card">
           <div class="card-header"><h3 style="font-size:14px"><i class="ti ti-form" style="color:var(--acc)"></i> Yeni müraciət</h3></div>
@@ -97,32 +100,44 @@
               <div class="form-group"><label>Müştəri adı *</label><input id="f-musteri" placeholder="Ad Soyad"/></div>
               <div class="form-group"><label>Əlaqə nömrəsi *</label><input id="f-nomre" type="tel" inputmode="tel" placeholder="+994 50 000 00 00"/></div>
             </div>
-            <div class="form-row">
-              <div class="form-group"><label>Ərazi *</label>
-                <select id="f-erazi">
-                  <option value="">Seçin...</option>
-                  <option>Nizami rayonu</option><option>Xətai rayonu</option><option>Nərimanov rayonu</option>
-                  <option>Sabunçu rayonu</option><option>Suraxanı rayonu</option><option>Xəzər rayonu</option>
-                  <option>Nəsimi rayonu</option><option>Yasamal rayonu</option><option>Abşeron rayonu</option>
-                  <option>Binəqədi rayonu</option><option>Səbail rayonu</option>
-                </select>
+
+            <!-- ƏRAZİ - çoxlu seçim -->
+            <div class="form-group">
+              <label>Ərazi * — <span style="color:var(--acc2);font-size:11px">Bir neçə seçmək olar</span></label>
+              <div class="otaq-group" id="f-erazi-chips">
+                <div class="otaq-chip" data-val="Nizami rayonu" onclick="formEraziToggle(this,'Nizami rayonu')">Nizami</div>
+                <div class="otaq-chip" data-val="Xətai rayonu" onclick="formEraziToggle(this,'Xətai rayonu')">Xətai</div>
+                <div class="otaq-chip" data-val="Nərimanov rayonu" onclick="formEraziToggle(this,'Nərimanov rayonu')">Nərimanov</div>
+                <div class="otaq-chip" data-val="Sabunçu rayonu" onclick="formEraziToggle(this,'Sabunçu rayonu')">Sabunçu</div>
+                <div class="otaq-chip" data-val="Suraxanı rayonu" onclick="formEraziToggle(this,'Suraxanı rayonu')">Suraxanı</div>
+                <div class="otaq-chip" data-val="Xəzər rayonu" onclick="formEraziToggle(this,'Xəzər rayonu')">Xəzər</div>
+                <div class="otaq-chip" data-val="Nəsimi rayonu" onclick="formEraziToggle(this,'Nəsimi rayonu')">Nəsimi</div>
+                <div class="otaq-chip" data-val="Yasamal rayonu" onclick="formEraziToggle(this,'Yasamal rayonu')">Yasamal</div>
+                <div class="otaq-chip" data-val="Abşeron rayonu" onclick="formEraziToggle(this,'Abşeron rayonu')">Abşeron</div>
+                <div class="otaq-chip" data-val="Binəqədi rayonu" onclick="formEraziToggle(this,'Binəqədi rayonu')">Binəqədi</div>
+                <div class="otaq-chip" data-val="Səbail rayonu" onclick="formEraziToggle(this,'Səbail rayonu')">Səbail</div>
               </div>
+              <div class="otaq-multi-info" id="f-erazi-info"></div>
+              <input type="hidden" id="f-erazi"/>
+            </div>
+
+            <div class="form-row">
               <div class="form-group"><label>Əmlakın növü *</label>
                 <select id="f-emlak">
                   <option value="">Seçin...</option>
-                  <option>Mənzil</option><option>Həyət evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
+                  <option>Mənzil</option><option>Həyət Evi/Bağ evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
                 </select>
               </div>
-            </div>
-            <div class="form-row">
               <div class="form-group"><label>Tikilinin növü *</label>
                 <select id="f-tikili">
                   <option value="">Seçin...</option>
                   <option>Köhnə tikili</option><option>Yeni tikili</option>
                 </select>
               </div>
-              <div class="form-group"><label>Büdcə (AZN)</label><input id="f-budce" type="number" inputmode="numeric" placeholder="150000"/></div>
             </div>
+
+            <div class="form-group"><label>Maksimum Büdcə (AZN)</label><input id="f-budce" type="number" inputmode="numeric" placeholder="150000"/></div>
+
             <div class="form-group">
               <label>Ödəmə növü *</label>
               <div class="pay-toggle">
@@ -131,24 +146,31 @@
               </div>
               <input type="hidden" id="f-odeme" value="Nağd"/>
             </div>
+
+            <!-- OTAQ SAYI - çoxlu seçim -->
             <div class="form-group">
-              <label>Otaq sayı *</label>
+              <label>Otaq sayı * — <span style="color:var(--acc2);font-size:11px">Bir neçə seçmək olar</span></label>
               <div class="otaq-group" id="otaq-chips">
-                <div class="otaq-chip" data-val="1 otaq" onclick="selOtaq(this,'1 otaq')">1 otaq</div>
-                <div class="otaq-chip" data-val="1→2 otaq" onclick="selOtaq(this,'1→2 otaq')">1→2</div>
-                <div class="otaq-chip" data-val="2 otaq" onclick="selOtaq(this,'2 otaq')">2 otaq</div>
-                <div class="otaq-chip" data-val="2→3 otaq" onclick="selOtaq(this,'2→3 otaq')">2→3</div>
-                <div class="otaq-chip" data-val="3 otaq" onclick="selOtaq(this,'3 otaq')">3 otaq</div>
-                <div class="otaq-chip" data-val="3→4 otaq" onclick="selOtaq(this,'3→4 otaq')">3→4</div>
-                <div class="otaq-chip" data-val="4 otaq" onclick="selOtaq(this,'4 otaq')">4 otaq</div>
-                <div class="otaq-chip" data-val="4→3 otaq" onclick="selOtaq(this,'4→3 otaq')">4→3</div>
-                <div class="otaq-chip" data-val="5 otaq" onclick="selOtaq(this,'5 otaq')">5 otaq</div>
-                <div class="otaq-chip" data-val="5→4 otaq" onclick="selOtaq(this,'5→4 otaq')">5→4</div>
+                <div class="otaq-chip" data-val="1 otaq" onclick="formOtaqToggle(this,'1 otaq')">1 otaq</div>
+                <div class="otaq-chip" data-val="1→2 otaq" onclick="formOtaqToggle(this,'1→2 otaq')">1→2</div>
+                <div class="otaq-chip" data-val="2 otaq" onclick="formOtaqToggle(this,'2 otaq')">2 otaq</div>
+                <div class="otaq-chip" data-val="2→3 otaq" onclick="formOtaqToggle(this,'2→3 otaq')">2→3</div>
+                <div class="otaq-chip" data-val="3 otaq" onclick="formOtaqToggle(this,'3 otaq')">3 otaq</div>
+                <div class="otaq-chip" data-val="3→4 otaq" onclick="formOtaqToggle(this,'3→4 otaq')">3→4</div>
+                <div class="otaq-chip" data-val="4 otaq" onclick="formOtaqToggle(this,'4 otaq')">4 otaq</div>
+                <div class="otaq-chip" data-val="4→3 otaq" onclick="formOtaqToggle(this,'4→3 otaq')">4→3</div>
+                <div class="otaq-chip" data-val="5 otaq" onclick="formOtaqToggle(this,'5 otaq')">5 otaq</div>
+                <div class="otaq-chip" data-val="5→4 otaq" onclick="formOtaqToggle(this,'5→4 otaq')">5→4</div>
               </div>
+              <div class="otaq-multi-info" id="f-otaq-info"></div>
               <input type="hidden" id="f-otaq"/>
             </div>
-            <div class="form-group"><label>Qeyd</label><input id="f-qeyd" placeholder="Əlavə qeyd (ixtiyari)"/></div>
-            <button class="btn-primary" onclick="saveMuraciet()"><i class="ti ti-check"></i> Müraciəti saxla</button>
+
+            <div class="form-group"><label>Qeyd</label><input id="f-qeyd" placeholder="Əlavə məlumat..."/></div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-primary" style="flex:1" onclick="saveMuraciet()"><i class="ti ti-check"></i> Yadda saxla</button>
+              <button class="btn-sm" onclick="clearForm()"><i class="ti ti-refresh"></i> Təmizlə</button>
+            </div>
           </div>
         </div>
       </div>
@@ -156,59 +178,76 @@
       <!-- CƏDVƏL -->
       <div id="page-cedvel" class="page">
         <div class="card">
-          <div class="card-header">
-            <h3 style="font-size:14px"><i class="ti ti-filter" style="color:var(--acc)"></i> Filtrlər</h3>
-            <span id="cedvel-count" style="font-size:12px;color:var(--text3)"></span>
-          </div>
+          <div class="card-header"><h3 style="font-size:14px"><i class="ti ti-table" style="color:var(--acc)"></i> Müraciətlər</h3></div>
           <div class="filter-bar">
-            <select id="f-st" onchange="renderList()"><option value="">Bütün statuslar</option><option>Aktiv</option><option>Deaktiv</option></select>
-            <select id="f-ot" onchange="renderList()">
-              <option value="">Bütün otaqlar</option>
-              <option>1 otaq</option><option>1→2 otaq</option><option>2 otaq</option><option>2→3 otaq</option>
-              <option>3 otaq</option><option>3→4 otaq</option><option>4 otaq</option><option>4→3 otaq</option>
-              <option>5 otaq</option><option>5→4 otaq</option>
+            <select id="f-st" onchange="renderList()" style="font-size:12px;padding:7px 28px 7px 10px;width:auto">
+              <option value="">Bütün statuslar</option>
+              <option>Aktiv</option><option>Deaktiv</option><option>Vaxtı Bitmiş</option>
             </select>
-            <select id="f-od" onchange="renderList()"><option value="">Bütün ödəmələr</option><option>Nağd</option><option>İpoteka</option></select>
+            <select id="f-od" onchange="renderList()" style="font-size:12px;padding:7px 28px 7px 10px;width:auto">
+              <option value="">Nağd/İpoteka</option>
+              <option>Nağd</option><option>İpoteka</option>
+            </select>
+            <span id="cedvel-count" style="font-size:12px;color:var(--text3);white-space:nowrap;margin-left:4px"></span>
           </div>
+          <div id="main-list"></div>
         </div>
-        <div id="main-list"></div>
       </div>
 
       <!-- AXTARIŞ -->
       <div id="page-axtaris" class="page">
         <div class="search-panel">
-          <h3><i class="ti ti-adjustments-horizontal"></i> Axtarış filterləri</h3>
+          <h3><i class="ti ti-filter"></i> Axtarış filtri</h3>
           <div class="form-stack">
-            <div class="form-row">
-              <div class="form-group"><label>1. Status</label>
-                <select id="ax-status"><option value="">Hamısı</option><option>Aktiv</option><option>Deaktiv</option></select>
-              </div>
-              <div class="form-group"><label>2. Ödəmə növü</label>
-                <select id="ax-odeme"><option value="">Hamısı</option><option>Nağd</option><option>İpoteka</option></select>
+
+            <!-- STATUS - çoxlu seçim, default Aktiv -->
+            <div class="form-group">
+              <label>Status — <span style="color:var(--acc2);font-size:11px">Defolt: Aktiv. Lazım olanda Deaktiv / Vaxtı Bitmiş əlavə edin</span></label>
+              <div class="otaq-group" id="ax-status-chips">
+                <div class="otaq-chip selected" data-val="Aktiv" onclick="axStatusToggle(this,'Aktiv')">✅ Aktiv</div>
+                <div class="otaq-chip" data-val="Deaktiv" onclick="axStatusToggle(this,'Deaktiv')">❌ Deaktiv</div>
+                <div class="otaq-chip" data-val="Vaxtı Bitmiş" onclick="axStatusToggle(this,'Vaxtı Bitmiş')">⏳ Vaxtı Bitmiş</div>
               </div>
             </div>
+
             <div class="form-row">
-              <div class="form-group"><label>Ərazi</label>
-                <select id="ax-erazi">
-                  <option value="">Hamısı</option>
-                  <option>Nizami rayonu</option><option>Xətai rayonu</option><option>Nərimanov rayonu</option>
-                  <option>Sabunçu rayonu</option><option>Suraxanı rayonu</option><option>Xəzər rayonu</option>
-                  <option>Nəsimi rayonu</option><option>Yasamal rayonu</option><option>Abşeron rayonu</option>
-                  <option>Binəqədi rayonu</option><option>Səbail rayonu</option>
-                </select>
+              <div class="form-group"><label>Ödəmə növü</label>
+                <select id="ax-odeme" onchange="doSearch()"><option value="">Hamısı</option><option>Nağd</option><option>İpoteka</option></select>
               </div>
               <div class="form-group"><label>Əmlak növü</label>
-                <select id="ax-emlak">
+                <select id="ax-emlak" onchange="doSearch()">
                   <option value="">Hamısı</option>
-                  <option>Mənzil</option><option>Həyət evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
+                  <option>Mənzil</option><option>Həyət Evi/Bağ evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
                 </select>
               </div>
             </div>
-            <div class="form-group"><label>3. Tikili növü</label>
-              <select id="ax-tikili"><option value="">Hamısı</option><option>Köhnə tikili</option><option>Yeni tikili</option></select>
+            <div class="form-group"><label>Tikili növü</label>
+              <select id="ax-tikili" onchange="doSearch()"><option value="">Hamısı</option><option>Köhnə tikili</option><option>Yeni tikili</option></select>
             </div>
+
+            <!-- ƏRAZİ - çoxlu seçim -->
             <div class="form-group">
-              <label>4. Otaq sayı — <span style="color:var(--acc2);font-size:11px">Bir neçə seçmək olar</span></label>
+              <label>Ərazi — <span style="color:var(--acc2);font-size:11px">Bir neçə seçmək olar</span></label>
+              <div class="otaq-group" id="ax-erazi-chips">
+                <div class="otaq-chip selected" data-val="" onclick="axEraziToggle(this,'')">Hamısı</div>
+                <div class="otaq-chip" data-val="Nizami rayonu" onclick="axEraziToggle(this,'Nizami rayonu')">Nizami</div>
+                <div class="otaq-chip" data-val="Xətai rayonu" onclick="axEraziToggle(this,'Xətai rayonu')">Xətai</div>
+                <div class="otaq-chip" data-val="Nərimanov rayonu" onclick="axEraziToggle(this,'Nərimanov rayonu')">Nərimanov</div>
+                <div class="otaq-chip" data-val="Sabunçu rayonu" onclick="axEraziToggle(this,'Sabunçu rayonu')">Sabunçu</div>
+                <div class="otaq-chip" data-val="Suraxanı rayonu" onclick="axEraziToggle(this,'Suraxanı rayonu')">Suraxanı</div>
+                <div class="otaq-chip" data-val="Xəzər rayonu" onclick="axEraziToggle(this,'Xəzər rayonu')">Xəzər</div>
+                <div class="otaq-chip" data-val="Nəsimi rayonu" onclick="axEraziToggle(this,'Nəsimi rayonu')">Nəsimi</div>
+                <div class="otaq-chip" data-val="Yasamal rayonu" onclick="axEraziToggle(this,'Yasamal rayonu')">Yasamal</div>
+                <div class="otaq-chip" data-val="Abşeron rayonu" onclick="axEraziToggle(this,'Abşeron rayonu')">Abşeron</div>
+                <div class="otaq-chip" data-val="Binəqədi rayonu" onclick="axEraziToggle(this,'Binəqədi rayonu')">Binəqədi</div>
+                <div class="otaq-chip" data-val="Səbail rayonu" onclick="axEraziToggle(this,'Səbail rayonu')">Səbail</div>
+              </div>
+              <div class="otaq-multi-info" id="ax-erazi-info"></div>
+            </div>
+
+            <!-- OTAQ SAYI - çoxlu seçim -->
+            <div class="form-group">
+              <label>Otaq sayı — <span style="color:var(--acc2);font-size:11px">Bir neçə seçmək olar</span></label>
               <div class="otaq-group" id="ax-chips">
                 <div class="otaq-chip selected" data-val="" onclick="axChipToggle(this,'')">Hamısı</div>
                 <div class="otaq-chip" data-val="1 otaq" onclick="axChipToggle(this,'1 otaq')">1 otaq</div>
@@ -224,15 +263,16 @@
               </div>
               <div class="otaq-multi-info" id="ax-otaq-info"></div>
             </div>
-            <div class="form-group"><label>5. Büdcə aralığı (AZN)</label>
+
+            <div class="form-group"><label>Maksimum Büdcə aralığı (AZN)</label>
               <div class="budget-row">
-                <input id="ax-b-min" type="number" inputmode="numeric" placeholder="min"/>
+                <input id="ax-b-min" type="number" inputmode="numeric" placeholder="min" oninput="doSearch()"/>
                 <span>—dən</span>
-                <input id="ax-b-max" type="number" inputmode="numeric" placeholder="max"/>
+                <input id="ax-b-max" type="number" inputmode="numeric" placeholder="max" oninput="doSearch()"/>
                 <span>—ə qədər</span>
               </div>
             </div>
-            <div class="form-group"><label>Agent adı</label><input id="ax-agent" placeholder="Agent adı ilə axtar..."/></div>
+            <div class="form-group"><label>Agent adı</label><input id="ax-agent" placeholder="Agent adı ilə axtar..." oninput="doSearch()"/></div>
           </div>
           <div class="search-footer">
             <button class="btn-primary" onclick="doSearch()"><i class="ti ti-search"></i> Axtar</button>
@@ -243,38 +283,64 @@
         <div id="ax-list"><div class="empty-state" style="color:var(--text3)">Axtarış edin</div></div>
       </div>
 
-      <!-- ADMİN PANELİ -->
-      <div id="page-admin" class="page">
-        <!-- Yeni istifadəçi yarat -->
+      <!-- VASİTƏÇİ AGENTLƏR (gələcək) -->
+      <div id="page-agentler" class="page">
         <div class="card">
-          <div class="card-header">
-            <h3 style="font-size:14px"><i class="ti ti-user-plus" style="color:var(--acc)"></i> Yeni istifadəçi yarat</h3>
-          </div>
-          <div class="form-stack">
-            <div class="form-row">
-              <div class="form-group"><label>Ad Soyad *</label><input id="new-name" placeholder="Əli Hüseynov"/></div>
-              <div class="form-group"><label>İstifadəçi adı *</label><input id="new-username" placeholder="ali_huseynov"/></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Şifrə *</label><input id="new-pass" type="password" placeholder="Şifrə"/></div>
-              <div class="form-group" style="justify-content:center">
-                <label>Redakt hüququ</label>
-                <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer">
-                  <input type="checkbox" id="new-canedit" style="width:auto;accent-color:var(--acc)"/>
-                  <span style="font-size:13px;color:var(--text2)">Əlavə etmə / Düzəltmə / Silmə</span>
-                </label>
-              </div>
-            </div>
-            <button class="btn-primary" style="align-self:flex-start" onclick="createUser()"><i class="ti ti-user-plus"></i> İstifadəçi yarat</button>
+          <div class="card-header"><h3 style="font-size:14px"><i class="ti ti-user-star" style="color:var(--acc)"></i> Vasitəçi Agentlər</h3></div>
+          <div class="empty-state">
+            <i class="ti ti-tools"></i>
+            Bu bölmə hazırlanma mərhələsindədir.<br/>
+            Tezliklə vasitəçi agentlərdən gələn istəklər burada görünəcək və icazəli istifadəçilər tərəfindən təsdiqlənib redaktə edilə biləcək.
           </div>
         </div>
+      </div>
 
-        <!-- İstifadəçilər siyahısı -->
+      <!-- MÜŞTƏRİLƏR (gələcək) -->
+      <div id="page-musteriler" class="page">
+        <div class="card">
+          <div class="card-header"><h3 style="font-size:14px"><i class="ti ti-users-group" style="color:var(--acc)"></i> Müştərilər</h3></div>
+          <div class="empty-state">
+            <i class="ti ti-tools"></i>
+            Bu bölmə hazırlanma mərhələsindədir.<br/>
+            Tezliklə müştərilərdən gələn istəklər burada görünəcək və icazəli istifadəçilər tərəfindən təsdiqlənib redaktə edilə biləcək.
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMİN PANELİ -->
+      <div id="page-admin" class="page">
         <div class="card">
           <div class="card-header">
-            <h3 style="font-size:14px"><i class="ti ti-users" style="color:var(--acc2)"></i> İstifadəçilər</h3>
+            <h3 style="font-size:14px"><i class="ti ti-users" style="color:var(--acc2)"></i> İstifadəçi İdarəsi</h3>
           </div>
-          <div id="admin-user-list"></div>
+          <!-- Yeni istifadəçi əlavə et -->
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+            <div style="font-size:13px;font-weight:600;color:var(--acc2);margin-bottom:10px">➕ Yeni istifadəçi əlavə et</div>
+            <div class="form-row" style="margin-bottom:10px">
+              <div class="form-group"><label>Ad Soyad</label><input id="new-u-name" placeholder="Əli Hüseynov"/></div>
+              <div class="form-group"><label>İstifadəçi adı</label><input id="new-u-user" placeholder="ali_h" autocomplete="off"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Şifrə</label><input id="new-u-pass" type="password" placeholder="şifrə" autocomplete="new-password"/></div>
+              <div class="form-group" style="justify-content:flex-end">
+                <button class="btn-primary" style="width:100%;margin-top:18px" onclick="addUser()"><i class="ti ti-user-plus"></i> Əlavə et</button>
+              </div>
+            </div>
+          </div>
+          <!-- İstifadəçi siyahısı -->
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr style="border-bottom:2px solid var(--border)">
+                  <th style="padding:8px;text-align:left;font-size:12px;color:var(--text3)">Ad Soyad</th>
+                  <th style="padding:8px;text-align:left;font-size:12px;color:var(--text3)">İstifadəçi adı</th>
+                  <th style="padding:8px;text-align:left;font-size:12px;color:var(--text3)">Hüquqlar</th>
+                  <th style="padding:8px;text-align:left;font-size:12px;color:var(--text3)">Əməliyyat</th>
+                </tr>
+              </thead>
+              <tbody id="admin-user-list"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -283,11 +349,11 @@
   </div>
 
   <div id="bottom-nav">
-    <button class="bn-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i>Əsas</button>
-    <button class="bn-item" data-page="muraciet" id="bn-muraciet-btn" onclick="showPage('muraciet')"><i class="ti ti-plus-circle"></i>Əlavə et</button>
-    <button class="bn-item" data-page="cedvel" onclick="showPage('cedvel')"><i class="ti ti-table"></i>Cədvəl</button>
-    <button class="bn-item" data-page="axtaris" onclick="showPage('axtaris')"><i class="ti ti-search"></i>Axtarış</button>
-    <button class="bn-item" data-page="admin" id="bn-admin-btn" onclick="showPage('admin')" style="display:none;color:var(--warn)"><i class="ti ti-shield-lock"></i>Admin</button>
+    <button class="bn-item active" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i>Əsas</button>
+    <button class="bn-item" onclick="showPage('muraciet')"><i class="ti ti-plus-circle"></i>Yarat</button>
+    <button class="bn-item" onclick="showPage('cedvel')"><i class="ti ti-table"></i>Cədvəl</button>
+    <button class="bn-item" onclick="showPage('axtaris')"><i class="ti ti-search"></i>Axtarış</button>
+    <button class="bn-item" id="bn-admin" style="display:none;color:var(--acc2)" onclick="showPage('admin')"><i class="ti ti-users"></i>Admin</button>
   </div>
 </div>
 
@@ -313,50 +379,64 @@
       </div>
       <div class="form-row">
         <div class="form-group"><label>Əlaqə nömrəsi</label><input id="e-nomre" type="tel" inputmode="tel"/></div>
-        <div class="form-group"><label>Büdcə (AZN)</label><input id="e-budce" type="number" inputmode="numeric"/></div>
+        <div class="form-group"><label>Maksimum Büdcə (AZN)</label><input id="e-budce" type="number" inputmode="numeric"/></div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label>Ərazi</label>
-          <select id="e-erazi">
-            <option>Nizami rayonu</option><option>Xətai rayonu</option><option>Nərimanov rayonu</option>
-            <option>Sabunçu rayonu</option><option>Suraxanı rayonu</option><option>Xəzər rayonu</option>
-            <option>Nəsimi rayonu</option><option>Yasamal rayonu</option><option>Abşeron rayonu</option>
-            <option>Binəqədi rayonu</option><option>Səbail rayonu</option>
-          </select>
+
+      <!-- ƏRAZİ - çoxlu seçim -->
+      <div class="form-group">
+        <label>Ərazi — <span style="color:var(--acc2);font-size:11px">Bir neçə seçmək olar</span></label>
+        <div class="otaq-group" id="e-erazi-chips">
+          <div class="otaq-chip" data-val="Nizami rayonu" onclick="editEraziToggle(this,'Nizami rayonu')">Nizami</div>
+          <div class="otaq-chip" data-val="Xətai rayonu" onclick="editEraziToggle(this,'Xətai rayonu')">Xətai</div>
+          <div class="otaq-chip" data-val="Nərimanov rayonu" onclick="editEraziToggle(this,'Nərimanov rayonu')">Nərimanov</div>
+          <div class="otaq-chip" data-val="Sabunçu rayonu" onclick="editEraziToggle(this,'Sabunçu rayonu')">Sabunçu</div>
+          <div class="otaq-chip" data-val="Suraxanı rayonu" onclick="editEraziToggle(this,'Suraxanı rayonu')">Suraxanı</div>
+          <div class="otaq-chip" data-val="Xəzər rayonu" onclick="editEraziToggle(this,'Xəzər rayonu')">Xəzər</div>
+          <div class="otaq-chip" data-val="Nəsimi rayonu" onclick="editEraziToggle(this,'Nəsimi rayonu')">Nəsimi</div>
+          <div class="otaq-chip" data-val="Yasamal rayonu" onclick="editEraziToggle(this,'Yasamal rayonu')">Yasamal</div>
+          <div class="otaq-chip" data-val="Abşeron rayonu" onclick="editEraziToggle(this,'Abşeron rayonu')">Abşeron</div>
+          <div class="otaq-chip" data-val="Binəqədi rayonu" onclick="editEraziToggle(this,'Binəqədi rayonu')">Binəqədi</div>
+          <div class="otaq-chip" data-val="Səbail rayonu" onclick="editEraziToggle(this,'Səbail rayonu')">Səbail</div>
         </div>
+        <input type="hidden" id="e-erazi"/>
+      </div>
+
+      <div class="form-row">
         <div class="form-group"><label>Əmlak növü</label>
           <select id="e-emlak">
-            <option>Mənzil</option><option>Həyət evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
+            <option>Mənzil</option><option>Həyət Evi/Bağ evi</option><option>Obyekt</option><option>Torpaq</option><option>Qaraj</option>
           </select>
         </div>
-      </div>
-      <div class="form-row">
         <div class="form-group"><label>Tikili növü</label>
           <select id="e-tikili"><option>Köhnə tikili</option><option>Yeni tikili</option></select>
         </div>
-        <div class="form-group"><label>Ödəmə növü</label>
-          <div class="pay-toggle">
-            <button class="pay-btn sel" id="epay-nagd" onclick="setEditPay('Nağd')">💵 Nağd</button>
-            <button class="pay-btn" id="epay-ipoteka" onclick="setEditPay('İpoteka')">🏦 İpoteka</button>
-          </div>
-          <input type="hidden" id="e-odeme" value="Nağd"/>
-        </div>
       </div>
-      <div class="form-group"><label>Otaq sayı</label>
+      <div class="form-group"><label>Ödəmə növü</label>
+        <div class="pay-toggle">
+          <button class="pay-btn sel" id="epay-nagd" onclick="setEditPay('Nağd')">💵 Nağd</button>
+          <button class="pay-btn" id="epay-ipoteka" onclick="setEditPay('İpoteka')">🏦 İpoteka</button>
+        </div>
+        <input type="hidden" id="e-odeme" value="Nağd"/>
+      </div>
+
+      <!-- OTAQ SAYI - çoxlu seçim -->
+      <div class="form-group">
+        <label>Otaq sayı — <span style="color:var(--acc2);font-size:11px">Bir neçə seçmək olar</span></label>
         <div class="otaq-group" id="e-otaq-chips">
-          <div class="otaq-chip" data-val="1 otaq" onclick="selEditOtaq(this,'1 otaq')">1 otaq</div>
-          <div class="otaq-chip" data-val="1→2 otaq" onclick="selEditOtaq(this,'1→2 otaq')">1→2</div>
-          <div class="otaq-chip" data-val="2 otaq" onclick="selEditOtaq(this,'2 otaq')">2 otaq</div>
-          <div class="otaq-chip" data-val="2→3 otaq" onclick="selEditOtaq(this,'2→3 otaq')">2→3</div>
-          <div class="otaq-chip" data-val="3 otaq" onclick="selEditOtaq(this,'3 otaq')">3 otaq</div>
-          <div class="otaq-chip" data-val="3→4 otaq" onclick="selEditOtaq(this,'3→4 otaq')">3→4</div>
-          <div class="otaq-chip" data-val="4 otaq" onclick="selEditOtaq(this,'4 otaq')">4 otaq</div>
-          <div class="otaq-chip" data-val="4→3 otaq" onclick="selEditOtaq(this,'4→3 otaq')">4→3</div>
-          <div class="otaq-chip" data-val="5 otaq" onclick="selEditOtaq(this,'5 otaq')">5 otaq</div>
-          <div class="otaq-chip" data-val="5→4 otaq" onclick="selEditOtaq(this,'5→4 otaq')">5→4</div>
+          <div class="otaq-chip" data-val="1 otaq" onclick="editOtaqToggle(this,'1 otaq')">1 otaq</div>
+          <div class="otaq-chip" data-val="1→2 otaq" onclick="editOtaqToggle(this,'1→2 otaq')">1→2</div>
+          <div class="otaq-chip" data-val="2 otaq" onclick="editOtaqToggle(this,'2 otaq')">2 otaq</div>
+          <div class="otaq-chip" data-val="2→3 otaq" onclick="editOtaqToggle(this,'2→3 otaq')">2→3</div>
+          <div class="otaq-chip" data-val="3 otaq" onclick="editOtaqToggle(this,'3 otaq')">3 otaq</div>
+          <div class="otaq-chip" data-val="3→4 otaq" onclick="editOtaqToggle(this,'3→4 otaq')">3→4</div>
+          <div class="otaq-chip" data-val="4 otaq" onclick="editOtaqToggle(this,'4 otaq')">4 otaq</div>
+          <div class="otaq-chip" data-val="4→3 otaq" onclick="editOtaqToggle(this,'4→3 otaq')">4→3</div>
+          <div class="otaq-chip" data-val="5 otaq" onclick="editOtaqToggle(this,'5 otaq')">5 otaq</div>
+          <div class="otaq-chip" data-val="5→4 otaq" onclick="editOtaqToggle(this,'5→4 otaq')">5→4</div>
         </div>
         <input type="hidden" id="e-otaq"/>
       </div>
+
       <div class="form-group"><label>Qeyd</label><input id="e-qeyd"/></div>
       <input type="hidden" id="e-id"/>
       <div style="display:flex;gap:10px;margin-top:4px">
